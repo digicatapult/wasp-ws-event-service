@@ -1,25 +1,43 @@
-# wasp-service-template
+# wasp-ws-event-service
 
-Template repository for bootstrapping new WASP services. Use this repo as a template in github when creating new `WASP` services. When forked a new pull request will automatically be created in the new repository to apply templating. Before merging you should also give access to the forked repo the `GITHUB_TOKEN` organisation secret prior to merging. This will allow the release workflow to run successfully on merging.
+WebSocket connection for the [wasp-event-service](https://github.com/digicatapult/wasp-event-service).
 
-## What this repo provides
+## Getting started
 
-This repo provides:
+`wasp-ws-event-service` can be run in a similar way to most nodejs applications. First install required dependencies using `npm`:
 
-- basic node.js project structure for a WASP service
-- linting with WASP prettier configuration
-- open-sourcing materials
-- Docker file
-- A simple helm chart for the service
-- A service with a healthcheck endpoint on `/health`
-- Testing apparatus using `mocha`, `chai` and `supertest`
-- Github workflows for testing and release
+```sh
+npm install
+```
+
+`wasp-ws-event-service` depends on `Kafka` which can be brought locally up using docker:
+
+```sh
+docker-compose up -d
+```
+
+And finally you can run the application in development mode with:
+
+```sh
+npm run dev
+```
+
+Or run tests with:
+
+```sh
+npm test
+```
 
 ## Environment Variables
 
-`wasp-service-template` is configured primarily using environment variables as follows:
+`wasp-ws-event-service` is configured primarily using environment variables as follows:
 
-| variable  | required | default | description                                                                          |
-| :-------- | :------: | :-----: | :----------------------------------------------------------------------------------- |
-| LOG_LEVEL |    N     | `info`  | Logging level. Valid values are [`trace`, `debug`, `info`, `warn`, `error`, `fatal`] |
-| PORT      |    N     |  `80`   | Port on which the service will listen                                                |
+| variable                        | required | default             | description                                                                                         |
+| :-----------------------------: | :------: | :-----------------: | :-------------------------------------------------------------------------------------------------: |
+| LOG_LEVEL                       |    N     | `       info`       | Logging level. Valid values are [`trace`, `debug`, `info`, `warn`, `error`, `fatal`]                |
+| PORT                            |    N     |         `80`        | Port on which the service will listen                                                               |
+| API_MAJOR_VERSION               |    N     |         `v1`        | Major version of this service                                                                       |
+| KAFKA_LOG_LEVEL                 |    N     |      `nothing`      | Log level to use for the Kafka connection. Choices are 'debug', 'info', 'warn', 'error' or 'nothing'|
+| KAFKA_BROKERS                   |    N     |  `localhost:9092`   | Comma separated List of Kafka brokers to connect to                                                 |
+| KAFKA_EVENTS_NOTIFICATIONS_TOPIC|    N     |`event-notifications`| Incoming Kafka topic for events                                                                     |
+| WS_PING_INTERVAL_MS             |    N     |        500          | Ping interval in milliseconds to keep WebSocket connection alive                                    |

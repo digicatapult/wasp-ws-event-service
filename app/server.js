@@ -1,10 +1,24 @@
 const express = require('express')
+const expressWS = require('express-ws')
 const pinoHttp = require('pino-http')
-const { PORT } = require('./env')
+
+const docs = require('./api-v1/docs')
+const { PORT, API_MAJOR_VERSION, WS_PING_INTERVAL_MS } = require('./env')
 const logger = require('./logger')
+const setupEventsConsumer = require('./eventsConsumer')
+
+const clients = new Map()
+
+const ipFromReq = (req) => {
+  if (req.headers['x-forwarded-for']) {
+    return req.headers['x-forwarded-for'].split(',')[0].trim()
+  }
+  return req.socket.remoteAddress
+}
 
 async function createHttpServer() {
-  const app = express()
+  const expressWs = expressWS(express())
+  const app = expressWs.app
   const requestLogger = pinoHttp({ logger })
 
   app.use((req, res, next) => {
@@ -16,7 +30,58 @@ async function createHttpServer() {
     res.status(200).send({ status: 'ok' })
   })
 
-  // Sorry - app.use checks arity
+  app.get('/async-docs', async (req, res) => {
+    const asyncApi = await docs
+    res.status(200).send(asyncApi)
+  })
+
+  app.ws(`/${API_MAJOR_VERSION}/thing/:thingId/event`, function (ws, req) {
+    const ip = ipFromReq(req)
+    logger.debug(`Connect established from %s`, ip)
+
+    const { thingId } = req.params
+    const { type } = req.query
+    const keys = []
+
+    if (Array.isArray(type)) {
+      type.forEach((t) => {
+        keys.push(JSON.stringify({ thingId, type: t }))
+      })
+    } else {
+      keys.push(JSON.stringify({ thingId, type }))
+    }
+
+    keys.forEach((key) => {
+      if (clients.has(key)) clients.get(key).add(ws)
+      else clients.set(key, new Set().add(ws))
+    })
+
+    ws.on('message', (msg) => logger.info(msg))
+
+    // setup a ping interval as there may an arbitrarily long delay between messages
+    let isAlive = true
+    ws.on('pong', () => {
+      isAlive = true
+    })
+    const interval = setInterval(function wsHeartbeat() {
+      if (!isAlive) ws.terminate()
+
+      isAlive = false
+      ws.ping('heartbeat')
+    }, WS_PING_INTERVAL_MS)
+
+    ws.on('close', () => {
+      logger.debug(`Connection closed from ${ip}`)
+      clearInterval(interval)
+
+      keys.forEach((key) => {
+        const set = clients.get(key)
+        set.delete(ws)
+        logger.debug(`${clients.get(key).size} clients remaining for ${key}`)
+      })
+    })
+  })
+
   // eslint-disable-next-line no-unused-vars
   app.use((err, req, res, next) => {
     if (err.status) {
@@ -27,16 +92,47 @@ async function createHttpServer() {
     }
   })
 
-  return { app }
+  const matchClients = (key, value) => {
+    const matches = clients.get(key)
+
+    if (matches) {
+      logger.info(`${matches.size} matching clients for key: ${key}`)
+      matches.forEach((client) => {
+        if (client.OPEN) client.send(JSON.stringify(value))
+        else client.close()
+      })
+    } else {
+      logger.info(`No matching clients for key: ${key}`)
+    }
+  }
+
+  const eventsConsumer = await setupEventsConsumer({
+    forwardParams: (thingId, value) => {
+      const key = JSON.stringify({ thingId })
+      const event = value.event
+      const type = event.type
+      const keyWithType = JSON.stringify({ thingId, type })
+
+      logger.info(`Broadcasting to ${key}`)
+      logger.info(`Broadcasting to ${keyWithType}`)
+
+      matchClients(key, event)
+      matchClients(keyWithType, event)
+    },
+  })
+
+  return { app, eventsConsumer }
 }
 
 /* istanbul ignore next */
 async function startServer() {
   try {
-    const { app } = await createHttpServer()
+    const { app, eventsConsumer } = await createHttpServer()
 
     const setupGracefulExit = ({ sigName, server, exitCode }) => {
       process.on(sigName, async () => {
+        await eventsConsumer.disconnect()
+
         server.close(() => {
           process.exit(exitCode)
         })
@@ -58,6 +154,7 @@ async function startServer() {
           resolve(server)
         }
       })
+
       server.on('error', (err) => {
         if (!resolved) {
           resolved = true

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "wasp-ws-event-service.fullname" . }}-config
+  labels:
+    {{- include "wasp-ws-event-service.labels" . | nindent 4 }}
+data:
+  port: {{ .Values.config.port | quote }}
+  logLevel: {{ .Values.config.logLevel }}
+  wsPingIntervalMs: {{ .Values.config.wsPingIntervalMs | quote }}
+  kafkaLogLevel: {{ .Values.config.kafkaLogLevel }}
+  kafkaBrokers: {{ include "wasp-ws-event-service.kafka.brokers" . }}
+  kafkaNotificationEventsTopic: {{ .Values.config.kafkaNotificationEventsTopic }}
+  notificationsReplicationFactor: {{ .Values.config.notificationsReplicationFactor | quote}}
+  notificationsPartitions: {{ .Values.config.notificationsPartitions | quote}}

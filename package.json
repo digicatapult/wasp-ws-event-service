@@ -1,7 +1,7 @@
 {
-  "name": "@digicatapult/wasp-service-template",
-  "version": "0.0.6",
-  "description": "Service for WASP",
+  "name": "@digicatapult/wasp-ws-event-service",
+  "version": "0.0.7",
+  "description": "Web socket service for streaming WASP events",
   "main": "app/index.js",
   "scripts": {
     "test": "NODE_ENV=test mocha --config ./test/mocharc.js ./test",
@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/digicatapult/wasp-service-template.git"
+    "url": "git+https://github.com/digicatapult/wasp-ws-event-service.git"
   },
   "engines": {
     "node": ">=14.16.0"
@@ -24,27 +24,33 @@
   "author": "Digital Catapult",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/digicatapult/wasp-service-template/issues"
+    "url": "https://github.com/digicatapult/wasp-ws-event-service/issues"
   },
-  "homepage": "https://github.com/digicatapult/wasp-service-template#readme",
+  "homepage": "https://github.com/digicatapult/wasp-ws-event-service#readme",
   "dependencies": {
+    "@asyncapi/parser": "^1.9.1",
     "dotenv": "^8.2.0",
     "envalid": "^7.0.0",
     "express": "^4.17.1",
+    "express-ws": "^5.0.2",
+    "kafkajs": "^1.15.0",
     "pino": "^6.11.1",
     "pino-http": "^5.5.0"
   },
   "devDependencies": {
     "chai": "^4.3.1",
+    "chai-json": "^1.0.0",
+    "delay": "^5.0.0",
     "depcheck": "^1.4.0",
     "eslint": "^7.21.0",
     "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-prettier": "^3.3.1",
-    "mocha": "^9.1.2",
+    "mocha": "^8.3.0",
     "nodemon": "^2.0.7",
     "nyc": "^15.1.0",
     "pino-colada": "^2.1.0",
     "prettier": "^2.2.1",
-    "supertest": "^6.1.3"
+    "supertest": "^6.1.3",
+    "ws": "^8.2.2"
   }
 }

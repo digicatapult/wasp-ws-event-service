@@ -1,13 +1,13 @@
 const { describe, before, it } = require('mocha')
 const { expect } = require('chai')
-
-const { setupServer } = require('./helpers/server')
+const { setupServer } = require('./helpers/setupHelper.js')
 
 describe('health', function () {
   const context = {}
+  setupServer(context)
+
   before(async function () {
-    await setupServer(context)
-    context.response = await context.request.get('/health')
+    context.response = await context.request.get(`/health`)
   })
 
   it('should return 200', function () {
