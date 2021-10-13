@@ -1,0 +1,23 @@
+apiVersion: v1
+entries:
+  wasp-ws-event-service:
+  - apiVersion: v2
+    appVersion: 0.0.7
+    created: "2021-10-13T11:24:44.476332528Z"
+    dependencies:
+    - condition: kafka.enabled
+      name: kafka
+      repository: https://charts.bitnami.com/bitnami
+      version: 12.7.3
+    description: A Helm chart for wasp-ws-event-service
+    digest: c1824eea2fbedf0afa8ba89e6d2180139af5c00dce815a05e104c1db2e45ef0a
+    maintainers:
+    - email: opensource@digicatapult.org.uk
+      name: digicatapult
+      url: www.digicatapult.org.uk
+    name: wasp-ws-event-service
+    type: application
+    urls:
+    - https://digicatapult.github.io/wasp-ws-event-service/wasp-ws-event-service-0.0.7.tgz
+    version: 0.0.7
+generated: "2021-10-13T11:24:44.46777453Z"
