@@ -7,6 +7,6 @@ test
 
 .eslintignore
 .eslintrc
-.nycrc
+.c8rc
 .prettierrc
 *.md

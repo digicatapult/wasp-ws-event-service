@@ -1,6 +1,6 @@
-const { describe, before, it } = require('mocha')
-const { expect } = require('chai')
-const { setupServer } = require('./helpers/setupHelper.js')
+import { describe, before, it } from 'mocha'
+import { expect } from 'chai'
+import { setupServer } from './helpers/setupHelper.js'
 
 describe('health', function () {
   const context = {}

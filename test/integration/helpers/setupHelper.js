@@ -1,9 +1,11 @@
-const { Kafka, logLevel: kafkaLogLevels } = require('kafkajs')
-const request = require('supertest')
-const { before, after } = require('mocha')
+import { Kafka, logLevel as kafkaLogLevels } from 'kafkajs'
+import request from 'supertest'
+import { before, after } from 'mocha'
 
-const { KAFKA_BROKERS, KAFKA_EVENTS_NOTIFICATIONS_TOPIC, PORT } = require('../../../app/env')
-const { createHttpServer } = require('../../../app/server')
+import env from '../../../app/env.js'
+import { createHttpServer } from '../../../app/server.js'
+
+const { KAFKA_BROKERS, KAFKA_EVENTS_NOTIFICATIONS_TOPIC, PORT } = env
 
 const setupServer = (context) => {
   before(async function () {
@@ -107,9 +109,4 @@ const getProducer = () => {
   }
 }
 
-module.exports = {
-  setupServer,
-  setupRealServer,
-  setupKafka,
-  getProducer,
-}
+export { setupServer, setupRealServer, setupKafka, getProducer }

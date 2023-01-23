@@ -1,6 +1,6 @@
-# syntax=docker/dockerfile:1.0.0-experimental
+# syntax=docker/dockerfile:1.4
 
-FROM node:14.16.0-alpine
+FROM node:lts-alpine
 
 # Allow log level to be controlled. Uses an argument name that is different
 # from the existing environment variable, otherwise the environment variable
@@ -12,7 +12,7 @@ WORKDIR /wasp-ws-event-service
 
 # Install base dependencies
 COPY . .
-RUN npm install --production
+RUN npm ci --production
 
 
 EXPOSE 80
