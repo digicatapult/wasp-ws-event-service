@@ -13,7 +13,7 @@ jobs:
       org_name: ${{ steps.repo_ids.outputs.ORG_NAME }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Check token
@@ -27,91 +27,20 @@ jobs:
         run: |
           REPO_NAME=$(echo "${{ github.event.repository.name }}" | tr '[:upper:]' '[:lower:]')
           ORG_NAME=$(echo "${{ github.event.repository.owner.name }}" | tr '[:upper:]' '[:lower:]')
-          echo "::set-output name=REPO_NAME::$REPO_NAME"
-          echo "::set-output name=ORG_NAME::$ORG_NAME"
-
-  helm-lint:
-    runs-on: ubuntu-latest
-    needs: [preconditions]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: Set up Helm
-        uses: azure/setup-helm@v1
-        with:
-          version: v3.4.0
-      - uses: actions/setup-python@v2
-        with:
-          python-version: 3.7
-      - name: Set up chart-testing
-        uses: helm/chart-testing-action@v2.0.1
-      - name: Run chart-testing (lint)
-        run: ct lint --validate-maintainers false --charts helm/${{ needs.preconditions.outputs.repo_name }}/ --chart-repos bitnami=https://charts.bitnami.com/bitnami,k8s-at-home=https://k8s-at-home.com/charts
-
-  helm-test:
-    runs-on: ubuntu-latest
-    needs: [preconditions]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: Setup QEMU
-        uses: docker/setup-qemu-action@v1
-        with:
-          platforms: all
-      - name: Setup Docker Buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v1
-        with:
-          buildkitd-flags: "--debug"
-      - name: Set up Helm
-        uses: azure/setup-helm@v1
-        with:
-          version: v3.4.0
-      - uses: actions/setup-python@v2
-        with:
-          python-version: 3.7
-      - name: Set up chart-testing
-        uses: helm/chart-testing-action@v2.0.1
-      - name: Setup Minikube
-        uses: manusa/actions-setup-minikube@v2.3.0
-        with:
-          minikube version: 'v1.17.1'
-          kubernetes version: 'v1.19.2'
-      - name: Login to minikube docker registry
-        run: eval $(minikube -p minikube docker-env)
-      - name: Build and Publish image
-        uses: docker/build-push-action@v2
-        with:
-          builder: ${{ steps.buildx.outputs.name }}
-          context: .
-          load: true
-          file: ./Dockerfile
-          tags: |
-            ${{ needs.preconditions.outputs.repo_name }}:latest
-          labels: |
-            org.opencontainers.image.title=${{ needs.preconditions.outputs.repo_name }}
-            org.opencontainers.image.description=${{ github.event.repository.description }}
-            org.opencontainers.image.source=${{ github.event.repository.html_url }}
-            org.opencontainers.image.url=${{ github.event.repository.html_url }}
-            org.opencontainers.image.revision=${{ github.sha }}
-      - name: Run chart-testing (install)
-        run: ct install  --charts helm/${{ needs.preconditions.outputs.repo_name }}/ --chart-repos bitnami=https://charts.bitnami.com/bitnami,k8s-at-home=https://k8s-at-home.com/charts
+          echo "REPO_NAME=$REPO_NAME" >> $GITHUB_OUTPUT
+          echo "ORG_NAME=$ORG_NAME" >> $GITHUB_OUTPUT
 
   lint:
     name: Run lint
     runs-on: ubuntu-latest
     needs: [preconditions]
     steps:
-      - uses: actions/checkout@master
-      - uses: actions/setup-node@master
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
-          node-version: 14.x
+          node-version: 18.x
       - name: Cache Node.js modules
-        uses: actions/cache@v1
+        uses: actions/cache@v3
         with:
           path: ~/.npm # npm cache files are stored in `~/.npm` on Linux/macOS
           key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -127,12 +56,12 @@ jobs:
     runs-on: ubuntu-latest
     needs: [preconditions]
     steps:
-      - uses: actions/checkout@master
-      - uses: actions/setup-node@master
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
-          node-version: 14.x
+          node-version: 18.x
       - name: Cache Node.js modules
-        uses: actions/cache@v1
+        uses: actions/cache@v3
         with:
           path: ~/.npm # npm cache files are stored in `~/.npm` on Linux/macOS
           key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -148,12 +77,12 @@ jobs:
     runs-on: ubuntu-latest
     needs: [preconditions]
     steps:
-      - uses: actions/checkout@master
-      - uses: actions/setup-node@master
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
-          node-version: 14.x
+          node-version: 18.x
       - name: Cache Node.js modules
-        uses: actions/cache@v1
+        uses: actions/cache@v3
         with:
           path: ~/.npm # npm cache files are stored in `~/.npm` on Linux/macOS
           key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -180,7 +109,7 @@ jobs:
       is_prerelease: ${{ steps.get_version.outputs.IS_PRERELEASE }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - run: git fetch --depth=1 --tags origin
       - name: Install yq
         run: sudo snap install yq
@@ -196,40 +125,75 @@ jobs:
 
   publish:
     name: "Publish package"
-    needs: [preconditions, helm-lint, helm-test, lint, dependency-check, tests, check-version]
+    needs: [preconditions, lint, dependency-check, tests, check-version]
     runs-on: ubuntu-latest
     if: ${{ needs.check-version.outputs.is_new_version == 'true' }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       # Docker build
       - name: Setup QEMU
-        uses: docker/setup-qemu-action@v1
+        uses: docker/setup-qemu-action@v2
         with:
           platforms: all
       - name: Setup Docker Buildx
         id: buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v2
         with:
           buildkitd-flags: "--debug"
+      - name: Generate tags
+        id: generate-tags
+        env:
+          VERSION: ${{ needs.check-version.outputs.version }}
+          IS_NEW_VERSION: ${{ needs.check-version.outputs.is_new_version }}
+          IS_PRERELEASE: ${{ needs.check-version.outputs.is_prerelease }}
+        # if it's a new non prerelease version tag with hash, version latest-dev and latest
+        # if it's a new prerelease version tag with hash, version and latest-dev
+        # if it's a non new version tag with hash and latest-dev
+        run: |
+          if [ "$IS_NEW_VERSION" == "true" ]; then
+            echo "GHCR_VERSION_TAG=ghcr.io/${{ needs.preconditions.outputs.org_name }}/${{ needs.preconditions.outputs.repo_name }}:$VERSION" >> $GITHUB_OUTPUT
+            echo "DOCKERHUB_VERSION_TAG=${{ needs.preconditions.outputs.org_name }}/${{ needs.preconditions.outputs.repo_name }}:$VERSION" >> $GITHUB_OUTPUT
+            if [ "$IS_PRERELEASE" == "false" ]; then
+              echo "GHCR_LATEST_TAG=ghcr.io/${{ needs.preconditions.outputs.org_name }}/${{ needs.preconditions.outputs.repo_name }}:latest" >> $GITHUB_OUTPUT
+              echo "DOCKERHUB_LATEST_TAG=${{ needs.preconditions.outputs.org_name }}/${{ needs.preconditions.outputs.repo_name }}:latest" >> $GITHUB_OUTPUT
+            else
+              echo "GHCR_LATEST_TAG=" >> $GITHUB_OUTPUT
+              echo "DOCKERHUB_LATEST_TAG=" >> $GITHUB_OUTPUT
+            fi;
+          else
+            echo "GHCR_VERSION_TAG=" >> $GITHUB_OUTPUT
+            echo "GHCR_LATEST_TAG=" >> $GITHUB_OUTPUT
+            echo "DOCKERHUB_VERSION_TAG=" >> $GITHUB_OUTPUT
+            echo "DOCKERHUB_LATEST_TAG=" >> $GITHUB_OUTPUT
+          fi;
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           registry: ghcr.io
-          username: $GITHUB_ACTOR
+          username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Publish multi-arch image
-        uses: docker/build-push-action@v2
+      - name: Login to Dockerhub Registry
+        uses: docker/login-action@v2
         with:
-          push: true
+          username: ${{ secrets.WASP_DOCKERHUB_USERNAME }}
+          password: ${{ secrets.WASP_DOCKERHUB_TOKEN }}
+      - name: Build image
+        uses: docker/build-push-action@v3
+        with:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
           file: ./Dockerfile
           platforms: linux/amd64, linux/arm64
+          push: true
           tags: |
-            ghcr.io/${{ needs.preconditions.outputs.org_name }}/${{ needs.preconditions.outputs.repo_name }}:${{ needs.check-version.outputs.version }}
-            ghcr.io/${{ needs.preconditions.outputs.org_name }}/${{ needs.preconditions.outputs.repo_name }}:latest
+            ghcr.io/${{ needs.preconditions.outputs.org_name }}/${{ needs.preconditions.outputs.repo_name }}:${{ github.sha }}
+            ${{ steps.generate-tags.outputs.GHCR_VERSION_TAG }}
+            ${{ steps.generate-tags.outputs.GHCR_LATEST_TAG }}
+            ${{ needs.preconditions.outputs.org_name }}/${{ needs.preconditions.outputs.repo_name }}:${{ github.sha }}
+            ${{ steps.generate-tags.outputs.DOCKERHUB_VERSION_TAG }}
+            ${{ steps.generate-tags.outputs.DOCKERHUB_LATEST_TAG }}
           labels: |
             org.opencontainers.image.title=${{ needs.preconditions.outputs.repo_name }}
             org.opencontainers.image.description=${{ github.event.repository.description }}
@@ -238,13 +202,6 @@ jobs:
             org.opencontainers.image.revision=${{ github.sha }}
             org.opencontainers.image.version=${{ needs.check-version.outputs.version }}
             org.opencontainers.image.created=${{ needs.check-version.outputs.build_date }}
-
-      # Publish helm charts
-      - name: Publish Helm charts
-        uses: stefanprodan/helm-gh-pages@master
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          charts_dir: helm
 
       # Build github release
       - name: Build release version

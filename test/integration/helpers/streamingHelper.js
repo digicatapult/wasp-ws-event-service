@@ -1,6 +1,6 @@
-const { getProducer } = require('./setupHelper')
+import { getProducer } from './setupHelper.js'
 
-const sendRawPayload = async (topic, message) => {
+export const sendRawPayload = async (topic, message) => {
   const producer = getProducer()
 
   const messageSent = await producer.send({
@@ -9,5 +9,3 @@ const sendRawPayload = async (topic, message) => {
   })
   return messageSent
 }
-
-module.exports = { sendRawPayload }

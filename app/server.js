@@ -1,11 +1,13 @@
-const express = require('express')
-const expressWS = require('express-ws')
-const pinoHttp = require('pino-http')
+import express from 'express'
+import expressWS from 'express-ws'
+import pinoHttp from 'pino-http'
 
-const docs = require('./api-v1/docs')
-const { PORT, API_MAJOR_VERSION, WS_PING_INTERVAL_MS } = require('./env')
-const logger = require('./logger')
-const setupEventsConsumer = require('./eventsConsumer')
+import docs from './api-v1/docs.js'
+import env from './env.js'
+import logger from './logger.js'
+import setupEventsConsumer from './eventsConsumer.js'
+
+const { PORT, WS_PING_INTERVAL_MS } = env
 
 const clients = new Map()
 
@@ -35,7 +37,7 @@ async function createHttpServer() {
     res.status(200).send(asyncApi)
   })
 
-  app.ws(`/${API_MAJOR_VERSION}/thing/:thingId/event`, function (ws, req) {
+  app.ws(`/v1/thing/:thingId/event`, function (ws, req) {
     const ip = ipFromReq(req)
     logger.debug(`Connect established from %s`, ip)
 
@@ -171,4 +173,4 @@ async function startServer() {
   }
 }
 
-module.exports = { startServer, createHttpServer }
+export { startServer, createHttpServer }

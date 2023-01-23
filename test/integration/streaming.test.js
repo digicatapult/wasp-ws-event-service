@@ -1,12 +1,13 @@
-/* eslint-disable no-console */
-const { describe, before, it } = require('mocha')
-const { expect } = require('chai')
-const ws = require('ws')
-const delay = require('delay')
+import { describe, before, it } from 'mocha'
+import { expect } from 'chai'
+import ws from 'ws'
+import delay from 'delay'
 
-const { setupRealServer, setupKafka } = require('./helpers/setupHelper.js')
-const { sendRawPayload } = require('./helpers/streamingHelper')
-const { KAFKA_EVENTS_NOTIFICATIONS_TOPIC, PORT, API_MAJOR_VERSION } = require('../../app/env')
+import { setupRealServer, setupKafka } from './helpers/setupHelper.js'
+import { sendRawPayload } from './helpers/streamingHelper.js'
+import env from '../../app/env.js'
+
+const { KAFKA_EVENTS_NOTIFICATIONS_TOPIC, PORT } = env
 
 const topic = KAFKA_EVENTS_NOTIFICATIONS_TOPIC
 
@@ -29,7 +30,7 @@ describe('Websockets', async function () {
       await new Promise((resolve) => {
         // Connect clients
         context.clients.push(
-          new ws(`ws://localhost:${PORT}/${API_MAJOR_VERSION}/thing/123/event`)
+          new ws(`ws://localhost:${PORT}/v1/thing/123/event`)
             .on('open', () => {
               resolve()
             })
@@ -80,7 +81,7 @@ describe('Websockets', async function () {
         let connectedCount = 0
         // Connect clients
         context.clients.push(
-          new ws(`ws://localhost:${PORT}/${API_MAJOR_VERSION}/thing/123/event`)
+          new ws(`ws://localhost:${PORT}/v1/thing/123/event`)
             .on('open', () => {
               connectedCount++
               if (connectedCount === 2) {
@@ -90,7 +91,7 @@ describe('Websockets', async function () {
             .on('message', (msg) => {
               context.streamedData.push(Buffer.from(msg).toString())
             }),
-          new ws(`ws://localhost:${PORT}/${API_MAJOR_VERSION}/thing/123/event`)
+          new ws(`ws://localhost:${PORT}/v1/thing/123/event`)
             .on('open', () => {
               connectedCount++
               if (connectedCount === 2) {
@@ -131,7 +132,7 @@ describe('Websockets', async function () {
       await new Promise((resolve) => {
         // Connect clients
         context.clients.push(
-          new ws(`ws://localhost:${PORT}/${API_MAJOR_VERSION}/thing/123/event/?type=${type}`)
+          new ws(`ws://localhost:${PORT}/v1/thing/123/event/?type=${type}`)
             .on('open', () => {
               resolve()
             })
@@ -186,7 +187,7 @@ describe('Websockets', async function () {
       await new Promise((resolve) => {
         // Connect clients
         context.clients.push(
-          new ws(`ws://localhost:${PORT}/${API_MAJOR_VERSION}/thing/123/event/?type=${type}&type=${anotherType}`)
+          new ws(`ws://localhost:${PORT}/v1/thing/123/event/?type=${type}&type=${anotherType}`)
             .on('open', () => {
               resolve()
             })

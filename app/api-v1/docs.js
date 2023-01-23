@@ -1,7 +1,7 @@
-const parser = require('@asyncapi/parser')
-const { version } = require('../../package.json')
+import parser from '@asyncapi/parser'
+import { version } from '../version.js'
 
-module.exports = parser.parse(`
+export default parser.parse(`
 asyncapi: 2.1.0
 info:
   title: WASP Web Sockets Event Service

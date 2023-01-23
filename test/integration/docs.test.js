@@ -1,8 +1,7 @@
-const { describe, before, it } = require('mocha')
-const jsonChai = require('chai-json')
-const { expect } = require('chai').use(jsonChai)
+import { describe, before, it } from 'mocha'
+import { expect } from 'chai'
 
-const { setupServer } = require('./helpers/setupHelper.js')
+import { setupServer } from './helpers/setupHelper.js'
 
 describe('async-docs', function () {
   const context = {}
@@ -17,7 +16,6 @@ describe('async-docs', function () {
   })
 
   it('successfully returns', function () {
-    expect(context.response.body).to.be.a.jsonObj()
-    expect(JSON.stringify(context.response.body)).to.include('asyncapi')
+    expect(context.response.body).to.have.nested.property('_json.asyncapi')
   })
 })
