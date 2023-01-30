@@ -180,7 +180,7 @@ jobs:
           username: ${{ secrets.WASP_DOCKERHUB_USERNAME }}
           password: ${{ secrets.WASP_DOCKERHUB_TOKEN }}
       - name: Build image
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
