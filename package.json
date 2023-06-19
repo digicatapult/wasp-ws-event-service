@@ -1,6 +1,6 @@
 {
   "name": "@digicatapult/wasp-ws-event-service",
-  "version": "0.1.26",
+  "version": "0.1.27",
   "description": "Web socket service for streaming WASP events",
   "main": "app/index.js",
   "scripts": {
@@ -30,7 +30,7 @@
   "homepage": "https://github.com/digicatapult/wasp-ws-event-service#readme",
   "dependencies": {
     "@asyncapi/parser": "^1.18.1",
-    "dotenv": "^16.1.4",
+    "dotenv": "^16.3.0",
     "envalid": "^7.3.1",
     "express": "^4.18.2",
     "express-ws": "^5.0.2",
@@ -45,7 +45,7 @@
     "chai": "^4.3.7",
     "delay": "^6.0.0",
     "depcheck": "^1.4.3",
-    "eslint": "^8.42.0",
+    "eslint": "^8.43.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^4.2.1",
     "mocha": "^10.2.0",
