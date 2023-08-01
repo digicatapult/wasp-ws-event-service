@@ -1,6 +1,6 @@
 {
   "name": "@digicatapult/wasp-ws-event-service",
-  "version": "0.1.35",
+  "version": "0.1.36",
   "description": "Web socket service for streaming WASP events",
   "main": "app/index.js",
   "scripts": {
