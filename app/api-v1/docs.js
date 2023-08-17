@@ -1,11 +1,11 @@
-import parser from '@asyncapi/parser'
-import { version } from '../version.js'
+import { Parser } from '@asyncapi/parser'
+const parser = new Parser()
 
 export default parser.parse(`
 asyncapi: 2.1.0
 info:
   title: WASP Web Sockets Event Service
-  version: ${version}
+  version: ${parser.version}
   description: 'Subscribe to event updates for specific things.'
   license:
     name: Apache 2.0
