@@ -2,7 +2,7 @@ import { Parser } from '@asyncapi/parser'
 const parser = new Parser()
 import { version } from '../version.js'
 
-export default await parser.parse(`
+const { document } = await parser.parse(`
 asyncapi: 2.1.0
 info:
   title: WASP Web Sockets Event Service
@@ -69,3 +69,5 @@ components:
       schema:
         type: string
         `)
+
+export default document
