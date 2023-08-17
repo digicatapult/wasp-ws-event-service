@@ -2,7 +2,7 @@ import { Parser } from '@asyncapi/parser'
 const parser = new Parser()
 import { version } from '../version.js'
 
-export default parser.parse(`
+export default await parser.parse(`
 asyncapi: 2.1.0
 info:
   title: WASP Web Sockets Event Service
