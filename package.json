@@ -1,6 +1,6 @@
 {
   "name": "@digicatapult/wasp-ws-event-service",
-  "version": "0.1.48",
+  "version": "0.1.49",
   "description": "Web socket service for streaming WASP events",
   "main": "app/index.js",
   "scripts": {
@@ -53,6 +53,6 @@
     "pino-colada": "^2.2.2",
     "prettier": "^3.0.3",
     "supertest": "^6.3.3",
-    "ws": "^8.13.0"
+    "ws": "^8.14.0"
   }
 }
