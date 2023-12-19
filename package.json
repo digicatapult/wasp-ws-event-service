@@ -1,6 +1,6 @@
 {
   "name": "@digicatapult/wasp-ws-event-service",
-  "version": "0.1.80",
+  "version": "0.1.81",
   "description": "Web socket service for streaming WASP events",
   "main": "app/index.js",
   "scripts": {
@@ -36,7 +36,7 @@
     "express-ws": "^5.0.2",
     "kafkajs": "^2.2.4",
     "pino": "^8.17.1",
-    "pino-http": "^8.5.1"
+    "pino-http": "^8.6.0"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.23.3",
@@ -45,7 +45,7 @@
     "chai": "^4.3.10",
     "delay": "^6.0.0",
     "depcheck": "^1.4.7",
-    "eslint": "^8.55.0",
+    "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.0.1",
     "mocha": "^10.2.0",
