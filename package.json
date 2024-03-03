@@ -1,6 +1,6 @@
 {
   "name": "@digicatapult/wasp-ws-event-service",
-  "version": "0.1.109",
+  "version": "0.1.110",
   "description": "Web socket service for streaming WASP events",
   "main": "app/index.js",
   "scripts": {
@@ -41,7 +41,7 @@
   "devDependencies": {
     "@babel/eslint-parser": "^7.23.10",
     "@babel/plugin-syntax-import-assertions": "^7.23.3",
-    "c8": "^8.0.1",
+    "c8": "^9.1.0",
     "chai": "^4.4.1",
     "delay": "^6.0.0",
     "depcheck": "^1.4.7",
