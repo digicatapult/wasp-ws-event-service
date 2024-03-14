@@ -1,5 +1,9 @@
 # wasp-ws-event-service
 
+## Deprecation Notice
+`WASP` was deprecated on March 14th 2024, there will be no further dependency or security updates to this platform.
+---
+
 WebSocket connection for the [wasp-event-service](https://github.com/digicatapult/wasp-event-service).
 
 ## Getting started
